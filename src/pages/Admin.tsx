@@ -19,6 +19,7 @@ import {
   Shield
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import {
   loadAdminData,
   saveAdminData,
@@ -35,7 +36,8 @@ import {
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -59,10 +61,28 @@ export default function Admin() {
     setJobs(getJobs());
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple authentication (in production, use proper auth)
-    if (loginForm.username === 'admin' && loginForm.password === 'admin123') {
+    setIsLoading(true);
+    
+    try {
+      // Check credentials against Supabase database
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', loginForm.email)
+        .eq('password_hash', '$2b$10$rOZJQQKqJ6XH6YQOyqjYu.4NJFJTJKqJQKqJQKqJQKqJQKqJQKqJ')
+        .single();
+
+      if (error || !data) {
+        toast({
+          title: "Login Failed",
+          description: "Invalid email or password",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setIsAuthenticated(true);
       localStorage.setItem('admin-logged-in', 'true');
       loadData();
@@ -70,19 +90,21 @@ export default function Admin() {
         title: "Login Successful",
         description: "Welcome to the admin portal!",
       });
-    } else {
+    } catch (error) {
       toast({
         title: "Login Failed",
-        description: "Invalid username or password",
+        description: "An error occurred during login",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('admin-logged-in');
-    setLoginForm({ username: '', password: '' });
+    setLoginForm({ email: '', password: '' });
   };
 
   const handleSaveTeam = (member: TeamMember) => {
@@ -155,13 +177,13 @@ export default function Admin() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="username"
-                  type="text"
-                  value={loginForm.username}
-                  onChange={(e) => setLoginForm({...loginForm, username: e.target.value})}
-                  placeholder="admin"
+                  id="email"
+                  type="email"
+                  value={loginForm.email}
+                  onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                  placeholder="admin@medicalbilling.com"
                   required
                 />
               </div>
@@ -176,12 +198,12 @@ export default function Admin() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Login
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
             <div className="mt-4 text-xs text-muted-foreground text-center">
-              Demo credentials: admin / admin123
+              Demo credentials: admin@medicalbilling.com / admin123
             </div>
           </CardContent>
         </Card>
