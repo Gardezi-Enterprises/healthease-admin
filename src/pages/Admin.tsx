@@ -71,7 +71,7 @@ export default function Admin() {
         .from('profiles')
         .select('*')
         .eq('email', loginForm.email)
-        .eq('password_hash', '$2b$10$rOZJQQKqJ6XH6YQOyqjYu.4NJFJTJKqJQKqJQKqJQKqJQKqJQKqJ')
+        .eq('password_hash', loginForm.password)
         .single();
 
       if (error || !data) {
@@ -203,7 +203,7 @@ export default function Admin() {
               </Button>
             </form>
             <div className="mt-4 text-xs text-muted-foreground text-center">
-              Demo credentials: admin@medicalbilling.com / admin123
+              Demo credentials: admin@medicalbilling.com / adminpass@123
             </div>
           </CardContent>
         </Card>
