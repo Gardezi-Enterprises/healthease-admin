@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import bcrypt from 'bcryptjs';
 import {
   loadAdminData,
   saveAdminData,
@@ -66,15 +67,26 @@ export default function Admin() {
     setIsLoading(true);
     
     try {
-      // Check credentials against Supabase database
+      // Get user from database by email
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('email', loginForm.email)
-        .eq('password_hash', loginForm.password)
         .single();
 
       if (error || !data) {
+        toast({
+          title: "Login Failed",
+          description: "Invalid email or password",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Compare entered password with hashed password using bcrypt
+      const isPasswordValid = await bcrypt.compare(loginForm.password, data.password_hash);
+      
+      if (!isPasswordValid) {
         toast({
           title: "Login Failed",
           description: "Invalid email or password",
