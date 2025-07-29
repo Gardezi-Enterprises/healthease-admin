@@ -5,13 +5,18 @@ export interface TeamMember {
   name: string;
   role: string;
   bio?: string;
-  image?: string;
+  image?: string | File;
 }
 
 export interface Service {
   id: string;
   title: string;
   description: string;
+  details?: string;
+  detailedTitle?: string;
+  detailedDescription?: string;
+  detailedContent?: string;
+  processSteps?: string[];
   features: string[];
   benefits?: string[];
 }
@@ -53,9 +58,22 @@ const defaultData: AdminData = {
   ],
   services: [
     {
-      id: '1',
+      id: 'svc-medical-coding',
       title: 'Medical Coding',
       description: 'Accurate ICD-10, CPT, and HCPCS coding services for maximum reimbursement.',
+      details: '',
+      detailedTitle: 'Medical Coding Process',
+      detailedDescription: 'Our comprehensive medical coding service ensures accurate and timely coding of medical records. We utilize state-of-the-art technology and expert coders to deliver high-quality results.',
+      detailedContent: '1. Medical Record Review\n2. ICD-10 Diagnosis Coding\n3. CPT Procedure Coding\n4. HCPCS Supply Coding\n5. Modifier Application\n6. Coding Audits\n7. Final Review',
+      processSteps: [
+        'Medical Record Review',
+        'ICD-10 Diagnosis Coding',
+        'CPT Procedure Coding',
+        'HCPCS Supply Coding',
+        'Modifier Application',
+        'Coding Audits',
+        'Final Review'
+      ],
       features: [
         'ICD-10 Diagnosis Coding',
         'CPT Procedure Coding',
@@ -71,9 +89,20 @@ const defaultData: AdminData = {
       ]
     },
     {
-      id: '2',
+      id: 'svc-claims-processing',
       title: 'Claims Processing',
       description: 'End-to-end claims management from submission to payment posting.',
+      details: '',
+      detailedTitle: 'Claims Processing Overview',
+      detailedDescription: 'Our claims processing service streamlines your revenue cycle by managing all aspects of claims submission, tracking, and payment posting.',
+      detailedContent: '1. Electronic Claims Submission\n2. Claims Tracking\n3. Denial Management\n4. Appeals Processing\n5. Payment Posting',
+      processSteps: [
+        'Electronic Claims Submission',
+        'Claims Tracking',
+        'Denial Management',
+        'Appeals Processing',
+        'Payment Posting'
+      ],
       features: [
         'Electronic Claims Submission',
         'Claims Tracking',
@@ -89,9 +118,20 @@ const defaultData: AdminData = {
       ]
     },
     {
-      id: '3',
+      id: 'svc-revenue-cycle',
       title: 'Revenue Cycle Management',
       description: 'Comprehensive revenue cycle optimization to maximize your practice\'s financial performance.',
+      details: '',
+      detailedTitle: 'Revenue Cycle Optimization',
+      detailedDescription: 'Our revenue cycle management service provides a holistic approach to optimizing your practice\'s financial performance and patient experience.',
+      detailedContent: '1. Patient Registration\n2. Insurance Verification\n3. Prior Authorization\n4. Charge Capture\n5. Collections Management',
+      processSteps: [
+        'Patient Registration',
+        'Insurance Verification',
+        'Prior Authorization',
+        'Charge Capture',
+        'Collections Management'
+      ],
       features: [
         'Patient Registration',
         'Insurance Verification',
@@ -151,9 +191,34 @@ export function getTeamMembers(): TeamMember[] {
   return loadAdminData().team;
 }
 
-export function saveTeamMembers(team: TeamMember[]): void {
+// Helper function to convert File to data URL
+async function fileToDataURL(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Helper function to process team members before saving
+async function processTeamMembersForStorage(team: TeamMember[]): Promise<TeamMember[]> {
+  const processedTeam = await Promise.all(
+    team.map(async (member) => {
+      if (member.image instanceof File) {
+        const dataURL = await fileToDataURL(member.image);
+        return { ...member, image: dataURL };
+      }
+      return member;
+    })
+  );
+  return processedTeam;
+}
+
+export async function saveTeamMembers(team: TeamMember[]): Promise<void> {
   const data = loadAdminData();
-  saveAdminData({ ...data, team });
+  const processedTeam = await processTeamMembersForStorage(team);
+  saveAdminData({ ...data, team: processedTeam });
 }
 
 export function getServices(): Service[] {

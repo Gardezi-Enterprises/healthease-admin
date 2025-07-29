@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Award, Users, Target, Heart } from 'lucide-react';
 import { getTeamMembers, type TeamMember } from '@/lib/localStorage';
+import { getImageSource } from '@/lib/utils';
 import teamMember1 from '@/assets/team-member-1.jpg';
 import teamMember2 from '@/assets/team-member-2.jpg';
 
@@ -149,7 +150,7 @@ export default function About() {
                 <CardHeader>
                   <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden">
                     <img 
-                      src={member.image || getTeamImage(index)} 
+                      src={getImageSource(member.image, getTeamImage(index))} 
                       alt={member.name}
                       className="w-full h-full object-cover"
                     />

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { MapPin, Clock, Briefcase, Calendar } from 'lucide-react';
 import { getJobs, type Job } from '@/lib/localStorage';
 import { useToast } from '@/hooks/use-toast';
@@ -17,8 +18,17 @@ export default function Careers() {
     name: '',
     email: '',
     phone: '',
-    resume: '',
+    resume: null as File | null,
     coverLetter: ''
+  });
+
+  const [showResumeForm, setShowResumeForm] = useState(false);
+  const [resumeFormData, setResumeFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    resume: null as File | null,
+    message: ''
   });
 
   useEffect(() => {
@@ -47,7 +57,7 @@ export default function Careers() {
         name: '',
         email: '',
         phone: '',
-        resume: '',
+        resume: null,
         coverLetter: ''
       });
       setShowApplication(false);
@@ -56,6 +66,38 @@ export default function Careers() {
       toast({
         title: "Error",
         description: "Failed to submit application. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitResume = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // EmailJS would be configured here
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Resume Submitted!",
+        description: "We'll review your resume and contact you if there's a suitable opportunity.",
+      });
+      
+      setResumeFormData({
+        name: '',
+        email: '',
+        phone: '',
+        resume: null,
+        message: ''
+      });
+      setShowResumeForm(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit resume. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -122,14 +164,44 @@ export default function Careers() {
                 
                 <div>
                   <label className="text-sm font-medium mb-2 block">Resume/CV *</label>
-                  <textarea
-                    required
-                    value={applicationData.resume}
-                    onChange={(e) => setApplicationData({...applicationData, resume: e.target.value})}
-                    rows={6}
-                    className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-                    placeholder="Paste your resume or provide a link to your resume..."
-                  />
+                  <div className="border-2 border-dashed border-input rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                    <input
+                      type="file"
+                      required
+                      accept=".pdf,.doc,.docx,.txt"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        setApplicationData({...applicationData, resume: file});
+                      }}
+                      className="hidden"
+                      id="resume-upload"
+                    />
+                    <label htmlFor="resume-upload" className="cursor-pointer">
+                      <div className="space-y-2">
+                        <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                          <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">
+                            {applicationData.resume ? applicationData.resume.name : 'Click to upload or drag and drop'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            PDF, DOC, DOCX, or TXT (max 10MB)
+                          </p>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                  {applicationData.resume && (
+                    <div className="mt-2 flex items-center gap-2 text-sm text-green-600">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      File selected: {applicationData.resume.name}
+                    </div>
+                  )}
                 </div>
                 
                 <div>
@@ -247,7 +319,7 @@ export default function Careers() {
                 <p className="text-muted-foreground mb-6">
                   We don't have any open positions at the moment, but we're always looking for talented individuals.
                 </p>
-                <Button>Send Us Your Resume</Button>
+                <Button onClick={() => setShowResumeForm(true)}>Send Us Your Resume</Button>
               </CardContent>
             </Card>
           ) : (
@@ -312,11 +384,116 @@ export default function Careers() {
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
             We're always looking for talented individuals. Send us your resume and we'll keep you in mind for future opportunities.
           </p>
-          <Button size="lg" variant="secondary">
+          <Button size="lg" variant="secondary" onClick={() => setShowResumeForm(true)}>
             Submit Resume
           </Button>
         </div>
-      </section>
+              </section>
+
+      {/* Resume Submission Dialog */}
+      <Dialog open={showResumeForm} onOpenChange={setShowResumeForm}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Submit Your Resume</DialogTitle>
+            <DialogDescription>
+              Send us your resume and we'll keep you in mind for future opportunities.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmitResume} className="space-y-6">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Full Name *</label>
+              <input
+                type="text"
+                required
+                value={resumeFormData.name}
+                onChange={(e) => setResumeFormData({...resumeFormData, name: e.target.value})}
+                className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                placeholder="Your full name"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Email *</label>
+              <input
+                type="email"
+                required
+                value={resumeFormData.email}
+                onChange={(e) => setResumeFormData({...resumeFormData, email: e.target.value})}
+                className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                placeholder="your@email.com"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Phone</label>
+              <input
+                type="tel"
+                value={resumeFormData.phone}
+                onChange={(e) => setResumeFormData({...resumeFormData, phone: e.target.value})}
+                className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                placeholder="(555) 123-4567"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Resume/CV *</label>
+              <div className="border-2 border-dashed border-input rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+                <input
+                  type="file"
+                  required
+                  accept=".pdf,.doc,.docx,.txt"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setResumeFormData({...resumeFormData, resume: file});
+                  }}
+                  className="hidden"
+                  id="resume-upload-general"
+                />
+                <label htmlFor="resume-upload-general" className="cursor-pointer">
+                  <div className="space-y-2">
+                    <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {resumeFormData.resume ? resumeFormData.resume.name : 'Click to upload or drag and drop'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        PDF, DOC, DOCX, or TXT (max 10MB)
+                      </p>
+                    </div>
+                  </div>
+                </label>
+              </div>
+              {resumeFormData.resume && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-green-600">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  File selected: {resumeFormData.resume.name}
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Message (Optional)</label>
+              <textarea
+                value={resumeFormData.message}
+                onChange={(e) => setResumeFormData({...resumeFormData, message: e.target.value})}
+                rows={4}
+                className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                placeholder="Tell us about your background, interests, or any specific roles you're looking for..."
+              />
+            </div>
+            
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Submitting...' : 'Submit Resume'}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

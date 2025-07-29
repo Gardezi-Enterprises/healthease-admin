@@ -16,7 +16,8 @@ import {
   Trash2, 
   Plus, 
   LogOut,
-  Shield
+  Shield,
+  X
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,6 +35,8 @@ import {
   type Service,
   type Job
 } from '@/lib/localStorage';
+import { getImageSource } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -74,6 +77,9 @@ export default function Admin() {
         .eq('email', loginForm.email)
         .single();
 
+      // Debug output
+      console.log('Supabase fetch result:', { data, error });
+
       if (error || !data) {
         toast({
           title: "Login Failed",
@@ -83,8 +89,18 @@ export default function Admin() {
         return;
       }
 
-      // Compare entered password with hashed password using bcrypt
-      const isPasswordValid = await bcrypt.compare(loginForm.password, data.password_hash);
+      // Debug output before bcrypt
+      console.log('About to compare password:', {
+        entered: loginForm.password,
+        hash: data.password_hash
+      });
+      let isPasswordValid = false;
+      try {
+        isPasswordValid = await bcrypt.compare(loginForm.password, data.password_hash);
+        console.log('Password comparison result:', isPasswordValid);
+      } catch (err) {
+        console.log('Error during bcrypt.compare:', err);
+      }
       
       if (!isPasswordValid) {
         toast({
@@ -103,6 +119,8 @@ export default function Admin() {
         description: "Welcome to the admin portal!",
       });
     } catch (error) {
+      // Debug output
+      console.log('Login error:', error);
       toast({
         title: "Login Failed",
         description: "An error occurred during login",
@@ -119,29 +137,33 @@ export default function Admin() {
     setLoginForm({ email: '', password: '' });
   };
 
-  const handleSaveTeam = (member: TeamMember) => {
+  const handleSaveTeam = async (member: TeamMember) => {
     const updated = teamMembers.find(t => t.id === member.id)
       ? teamMembers.map(t => t.id === member.id ? member : t)
       : [...teamMembers, { ...member, id: Date.now().toString() }];
     
     setTeamMembers(updated);
-    saveTeamMembers(updated);
+    await saveTeamMembers(updated);
     setEditingTeam(null);
     toast({ title: "Team member saved successfully!" });
   };
 
-  const handleDeleteTeam = (id: string) => {
+  const handleDeleteTeam = async (id: string) => {
     const updated = teamMembers.filter(t => t.id !== id);
     setTeamMembers(updated);
-    saveTeamMembers(updated);
+    await saveTeamMembers(updated);
     toast({ title: "Team member deleted successfully!" });
   };
 
   const handleSaveService = (service: Service) => {
-    const updated = services.find(s => s.id === service.id)
-      ? services.map(s => s.id === service.id ? service : s)
-      : [...services, { ...service, id: Date.now().toString() }];
-    
+    // Generate a unique id if this is a new service
+    const newService = {
+      ...service,
+      id: service.id || Date.now().toString(),
+    };
+    const updated = services.find(s => s.id === newService.id)
+      ? services.map(s => s.id === newService.id ? newService : s)
+      : [...services, newService];
     setServices(updated);
     saveServices(updated);
     setEditingService(null);
@@ -292,36 +314,47 @@ export default function Admin() {
               {teamMembers.map((member) => (
                 <Card key={member.id}>
                   <CardHeader>
-                    <CardTitle className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold">{member.name}</h3>
-                        <p className="text-sm text-muted-foreground">{member.role}</p>
-                      </div>
-                      <div className="flex space-x-1">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button size="sm" variant="outline" onClick={() => setEditingTeam(member)}>
-                              <Edit className="h-3 w-3" />
+                    <div className="flex items-start space-x-4">
+                      {member.image && (
+                        <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+                          <img 
+                            src={getImageSource(member.image)} 
+                            alt={member.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <CardTitle className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-semibold">{member.name}</h3>
+                            <p className="text-sm text-muted-foreground">{member.role}</p>
+                          </div>
+                          <div className="flex space-x-1">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button size="sm" variant="outline" onClick={() => setEditingTeam(member)}>
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Edit Team Member</DialogTitle>
+                                </DialogHeader>
+                                <TeamMemberForm member={editingTeam} onSave={handleSaveTeam} />
+                              </DialogContent>
+                            </Dialog>
+                            <Button size="sm" variant="outline" onClick={() => handleDeleteTeam(member.id)}>
+                              <Trash2 className="h-3 w-3" />
                             </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Edit Team Member</DialogTitle>
-                            </DialogHeader>
-                            <TeamMemberForm member={editingTeam} onSave={handleSaveTeam} />
-                          </DialogContent>
-                        </Dialog>
-                        <Button size="sm" variant="outline" onClick={() => handleDeleteTeam(member.id)}>
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                          </div>
+                        </CardTitle>
+                        {member.bio && (
+                          <p className="text-sm text-muted-foreground mt-2">{member.bio}</p>
+                        )}
                       </div>
-                    </CardTitle>
+                    </div>
                   </CardHeader>
-                  {member.bio && (
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{member.bio}</p>
-                    </CardContent>
-                  )}
                 </Card>
               ))}
             </div>
@@ -333,12 +366,12 @@ export default function Admin() {
               <h2 className="text-3xl font-bold">Services Management</h2>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button onClick={() => setEditingService({ id: '', title: '', description: '', features: [], benefits: [] })}>
+                  <Button onClick={() => setEditingService({ id: '', title: '', description: '', details: '', detailedTitle: '', detailedDescription: '', detailedContent: '', processSteps: [], features: [], benefits: [] })}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Service
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Add Service</DialogTitle>
                     <DialogDescription>
@@ -366,7 +399,7 @@ export default function Admin() {
                               <Edit className="h-3 w-3" />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-2xl">
+                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
                               <DialogTitle>Edit Service</DialogTitle>
                             </DialogHeader>
@@ -513,13 +546,70 @@ function TeamMemberForm({ member, onSave }: { member: TeamMember | null, onSave:
         />
       </div>
       <div>
-        <Label htmlFor="image">Image URL</Label>
-        <Input
-          id="image"
-          value={formData.image}
-          onChange={(e) => setFormData({...formData, image: e.target.value})}
-          placeholder="https://example.com/image.jpg"
-        />
+        <Label htmlFor="image">Profile Image</Label>
+        
+        {/* Current Image Preview */}
+        {formData.image && (
+          <div className="mb-4">
+            <p className="text-sm font-medium mb-2">Current Image:</p>
+            <div className="relative inline-block">
+              <img 
+                src={formData.image instanceof File ? URL.createObjectURL(formData.image) : formData.image} 
+                alt="Preview" 
+                className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+              />
+              <button
+                type="button"
+                onClick={() => setFormData({...formData, image: null})}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {/* File Upload Area */}
+        <div className="border-2 border-dashed border-input rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null;
+              // When a new file is selected, it completely replaces the old image
+              setFormData({...formData, image: file || null});
+            }}
+            className="hidden"
+            id="image-upload"
+          />
+          <label htmlFor="image-upload" className="cursor-pointer">
+            <div className="space-y-2">
+              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium">
+                  {formData.image ? 'Click to change image' : 'Click to upload image'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  JPG, PNG, or GIF (max 5MB)
+                </p>
+              </div>
+            </div>
+          </label>
+        </div>
+        
+        {/* File Selection Feedback */}
+        {formData.image instanceof File && (
+          <div className="mt-2 flex items-center gap-2 text-sm text-green-600">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            New file selected: {formData.image.name}
+          </div>
+        )}
       </div>
       <Button type="submit" className="w-full">Save</Button>
     </form>
@@ -528,8 +618,28 @@ function TeamMemberForm({ member, onSave }: { member: TeamMember | null, onSave:
 
 function ServiceForm({ service, onSave }: { service: Service | null, onSave: (service: Service) => void }) {
   const [formData, setFormData] = useState(service || { 
-    id: '', title: '', description: '', features: [], benefits: [] 
+    id: '', title: '', description: '', details: '', detailedTitle: '', detailedDescription: '', detailedContent: '', processSteps: [], features: [], benefits: [] 
   });
+
+  // Dynamic handlers for features, benefits, processSteps
+  const handleArrayChange = (field: 'features' | 'benefits' | 'processSteps', idx: number, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].map((item: string, i: number) => i === idx ? value : item)
+    }));
+  };
+  const handleAddItem = (field: 'features' | 'benefits' | 'processSteps') => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: [...prev[field], '']
+    }));
+  };
+  const handleRemoveItem = (field: 'features' | 'benefits' | 'processSteps', idx: number) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].filter((_: string, i: number) => i !== idx)
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -537,7 +647,7 @@ function ServiceForm({ service, onSave }: { service: Service | null, onSave: (se
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6 p-4">
       <div>
         <Label htmlFor="title">Service Title</Label>
         <Input
@@ -558,26 +668,119 @@ function ServiceForm({ service, onSave }: { service: Service | null, onSave: (se
         />
       </div>
       <div>
-        <Label htmlFor="features">Features (one per line)</Label>
+        <Label htmlFor="details">Service Details</Label>
         <Textarea
-          id="features"
-          value={formData.features.join('\n')}
-          onChange={(e) => setFormData({...formData, features: e.target.value.split('\n').filter(f => f.trim())})}
+          id="details"
+          value={formData.details || ''}
+          onChange={(e) => setFormData({...formData, details: e.target.value})}
           rows={5}
-          placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
+          placeholder="Enter detailed information about the service here."
+        />
+      </div>
+      
+      <Separator />
+      <div className="text-lg font-semibold">Detailed Page Content</div>
+      
+      <div>
+        <Label htmlFor="detailedTitle">Detailed Page Title</Label>
+        <Input
+          id="detailedTitle"
+          value={formData.detailedTitle || ''}
+          onChange={(e) => setFormData({...formData, detailedTitle: e.target.value})}
+          placeholder="Enter title for the detailed service page"
         />
       </div>
       <div>
-        <Label htmlFor="benefits">Benefits (one per line)</Label>
+        <Label htmlFor="detailedDescription">Detailed Page Description</Label>
         <Textarea
-          id="benefits"
-          value={formData.benefits?.join('\n') || ''}
-          onChange={(e) => setFormData({...formData, benefits: e.target.value.split('\n').filter(b => b.trim())})}
-          rows={4}
-          placeholder="Benefit 1&#10;Benefit 2&#10;Benefit 3"
+          id="detailedDescription"
+          value={formData.detailedDescription || ''}
+          onChange={(e) => setFormData({...formData, detailedDescription: e.target.value})}
+          rows={3}
+          placeholder="Enter detailed description for the service page"
         />
       </div>
-      <Button type="submit" className="w-full">Save</Button>
+      <div>
+        <Label htmlFor="detailedContent">Detailed Content</Label>
+        <Textarea
+          id="detailedContent"
+          value={formData.detailedContent || ''}
+          onChange={(e) => setFormData({...formData, detailedContent: e.target.value})}
+          rows={6}
+          placeholder="Enter comprehensive content about the service (supports line breaks)"
+        />
+      </div>
+      <Separator />
+      <div className="text-lg font-semibold">Features & Benefits</div>
+      {/* Features */}
+      <div>
+        <Label>Features</Label>
+        <div className="space-y-2">
+          {formData.features.map((feature, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <Input
+                value={feature}
+                onChange={e => handleArrayChange('features', idx, e.target.value)}
+                placeholder={`Feature ${idx + 1}`}
+                className="flex-1"
+              />
+              <Button type="button" size="icon" variant="ghost" onClick={() => handleRemoveItem('features', idx)} aria-label="Remove feature">
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => handleAddItem('features')}>
+            <Plus className="w-4 h-4 mr-1" /> Add Feature
+          </Button>
+        </div>
+      </div>
+      {/* Benefits */}
+      <div>
+        <Label>Benefits</Label>
+        <div className="space-y-2">
+          {formData.benefits?.map((benefit, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <Input
+                value={benefit}
+                onChange={e => handleArrayChange('benefits', idx, e.target.value)}
+                placeholder={`Benefit ${idx + 1}`}
+                className="flex-1"
+              />
+              <Button type="button" size="icon" variant="ghost" onClick={() => handleRemoveItem('benefits', idx)} aria-label="Remove benefit">
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => handleAddItem('benefits')}>
+            <Plus className="w-4 h-4 mr-1" /> Add Benefit
+          </Button>
+        </div>
+      </div>
+      {/* Process Steps */}
+      <div>
+        <Label>Process Steps</Label>
+        <div className="space-y-2">
+          {formData.processSteps?.map((step, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <Input
+                value={step}
+                onChange={e => handleArrayChange('processSteps', idx, e.target.value)}
+                placeholder={`Step ${idx + 1}`}
+                className="flex-1"
+              />
+              <Button type="button" size="icon" variant="ghost" onClick={() => handleRemoveItem('processSteps', idx)} aria-label="Remove step">
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => handleAddItem('processSteps')}>
+            <Plus className="w-4 h-4 mr-1" /> Add Step
+          </Button>
+        </div>
+      </div>
+      <div className="pt-4">
+        <Button type="submit" className="w-full">Save Service</Button>
+      </div>
     </form>
   );
 }
