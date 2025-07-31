@@ -158,11 +158,11 @@ export default function Admin() {
         // Show uploading toast
         toast({ title: "Uploading image...", description: "Please wait while we upload your image." });
         
-        // Validate file before upload
-        if (member.image.size > 5242880) { // 5MB
+        // Validate file before upload (2MB limit for base64 fallback)
+        if (member.image.size > 2097152) { // 2MB
           toast({ 
             title: "Image too large", 
-            description: "Please choose an image smaller than 5MB.", 
+            description: "Please choose an image smaller than 2MB.", 
             variant: "destructive" 
           });
           return;
@@ -739,7 +739,7 @@ function TeamMemberForm({ member, onSave }: { member: TeamMember | null, onSave:
                   {formData.image ? 'Click to change image' : 'Click to upload image'}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  JPG, PNG, or GIF (max 5MB)
+                  JPG, PNG, or GIF (max 2MB)
                 </p>
               </div>
             </div>

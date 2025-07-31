@@ -37,7 +37,23 @@ export async function ensureStorageBucket(bucketName: string = 'team-images'): P
   }
 }
 
-// Image upload function
+// Convert file to base64 for fallback storage
+export async function fileToBase64(file: File): Promise<string | null> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result);
+    };
+    reader.onerror = () => {
+      console.error('Error reading file as base64');
+      resolve(null);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Image upload function with fallback to base64
 export async function uploadImage(file: File, bucket: string = 'team-images'): Promise<string | null> {
   try {
     // Validate file
@@ -46,9 +62,9 @@ export async function uploadImage(file: File, bucket: string = 'team-images'): P
       return null;
     }
 
-    // Check file size (5MB limit)
-    if (file.size > 5242880) {
-      console.error('File size exceeds 5MB limit');
+    // Check file size (2MB limit for base64 fallback)
+    if (file.size > 2097152) {
+      console.error('File size exceeds 2MB limit');
       return null;
     }
 
@@ -59,37 +75,49 @@ export async function uploadImage(file: File, bucket: string = 'team-images'): P
       return null;
     }
 
-    // Ensure bucket exists
-    const bucketReady = await ensureStorageBucket(bucket);
-    if (!bucketReady) {
-      console.error('Failed to ensure storage bucket exists');
-      return null;
+    console.log('Attempting Supabase Storage upload:', { fileSize: file.size, fileType: file.type });
+
+    // Try Supabase Storage first
+    try {
+      // Ensure bucket exists
+      const bucketReady = await ensureStorageBucket(bucket);
+      if (bucketReady) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from(bucket)
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (!uploadError) {
+          const { data } = supabase.storage
+            .from(bucket)
+            .getPublicUrl(filePath);
+
+          console.log('Image uploaded to Supabase Storage successfully:', data.publicUrl);
+          return data.publicUrl;
+        } else {
+          console.warn('Supabase Storage upload failed, falling back to base64:', uploadError);
+        }
+      }
+    } catch (storageError) {
+      console.warn('Supabase Storage not available, falling back to base64:', storageError);
     }
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `${fileName}`;
-
-    console.log('Uploading file:', { fileName, fileSize: file.size, fileType: file.type });
-
-    const { error: uploadError } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (uploadError) {
-      console.error('Error uploading image:', uploadError);
-      return null;
+    // Fallback to base64 encoding
+    console.log('Using base64 fallback for image storage');
+    const base64Data = await fileToBase64(file);
+    if (base64Data) {
+      console.log('Image converted to base64 successfully');
+      return base64Data;
     }
 
-    const { data } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(filePath);
-
-    console.log('Image uploaded successfully:', data.publicUrl);
-    return data.publicUrl;
+    console.error('Both Supabase Storage and base64 conversion failed');
+    return null;
   } catch (error) {
     console.error('Error in uploadImage:', error);
     return null;
