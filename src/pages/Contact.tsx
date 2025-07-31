@@ -191,7 +191,7 @@ export default function Contact() {
                   <div className="flex items-center space-x-3">
                     <Mail className="h-5 w-5 text-primary" />
                     <div>
-                      <p className="font-medium">info@medibillingpro.com</p>
+                      <p className="font-medium">info@billfillrcm.com</p>
                       <p className="text-sm text-muted-foreground">General Inquiries</p>
                     </div>
                   </div>

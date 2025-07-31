@@ -49,11 +49,9 @@ export default function About() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center text-white">
             <Badge variant="secondary" className="mb-4">
-              About MediBilling Pro
+              About BillFill RCM
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Your Trusted Medical Billing Partner
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">About BillFill RCM</h1>
             <p className="text-xl leading-relaxed text-white/90">
               For over a decade, we've been helping healthcare providers optimize their revenue cycles 
               with professional, accurate, and compliant medical billing services.
@@ -71,7 +69,7 @@ export default function About() {
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Story</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p>
-                    Founded in 2014, MediBilling Pro emerged from a simple observation: healthcare providers 
+                    Founded in 2014, BillFill RCM emerged from a simple observation: healthcare providers 
                     were spending too much time on administrative tasks and not enough time caring for patients.
                   </p>
                   <p>

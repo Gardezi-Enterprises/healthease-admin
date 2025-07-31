@@ -7,6 +7,27 @@ All colors MUST be HSL.
 */
 
 @layer base {
+  .bg-grid-white {
+    background-image: var(--grid-white);
+  }
+
+  /* Ensure long titles are fully visible */
+  .break-words {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Prevent text clipping for descenders */
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.2;
+    padding-bottom: 0.1em;
+  }
+
+  /* Ensure proper text rendering */
+  .leading-tight {
+    line-height: 1.1;
+    padding-bottom: 0.15em;
+  }
   :root {
     /* Medical billing theme - Professional Deep Blue & Teal */
     --background: 0 0% 100%;
@@ -68,6 +89,22 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Grid pattern for backgrounds */
+    --grid-white: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      hsl(0 0% 100% / 0.05) 1px,
+      hsl(0 0% 100% / 0.05) 2px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 1px,
+      hsl(0 0% 100% / 0.05) 1px,
+      hsl(0 0% 100% / 0.05) 2px
+    );
   }
 
   .dark {
@@ -131,5 +168,417 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Rich Text Content Styles */
+  .rich-text-content {
+    @apply text-foreground;
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: normal;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .rich-text-content h1 {
+    @apply text-3xl font-bold mb-4 mt-6 text-foreground;
+  }
+
+  .rich-text-content h2 {
+    @apply text-2xl font-bold mb-3 mt-5 text-foreground;
+  }
+
+  .rich-text-content h3 {
+    @apply text-xl font-semibold mb-2 mt-4 text-foreground;
+  }
+
+  .rich-text-content p {
+    @apply mb-4 text-foreground leading-relaxed;
+  }
+
+  .rich-text-content ul {
+    @apply mb-4 pl-6 space-y-2;
+  }
+
+  .rich-text-content ol {
+    @apply mb-4 pl-6 space-y-2;
+  }
+
+  .rich-text-content li {
+    @apply text-foreground leading-relaxed;
+  }
+
+  .rich-text-content blockquote {
+    @apply border-l-4 border-primary/30 pl-4 py-2 my-4 bg-muted/30 italic text-muted-foreground;
+  }
+
+  .rich-text-content strong {
+    @apply font-semibold text-foreground;
+  }
+
+  .rich-text-content em {
+    @apply italic text-foreground;
+  }
+
+  .rich-text-content u {
+    @apply underline text-foreground;
+  }
+
+  .rich-text-content a {
+    @apply text-primary hover:text-primary/80 underline;
+  }
+
+  /* Text alignment */
+  .rich-text-content [style*="text-align: center"] {
+    @apply text-center;
+  }
+
+  .rich-text-content [style*="text-align: right"] {
+    @apply text-right;
+  }
+
+  .rich-text-content [style*="text-align: left"] {
+    @apply text-left;
+  }
+
+  /* Lists styling */
+  .rich-text-content ul li {
+    @apply list-disc;
+  }
+
+  .rich-text-content ol li {
+    @apply list-decimal;
+  }
+
+  /* Rich Text Editor Styles */
+  .rich-text-editor {
+    @apply text-foreground;
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: normal;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .rich-text-editor h1 {
+    @apply text-2xl font-bold mb-3 mt-4 text-foreground;
+  }
+
+  .rich-text-editor h2 {
+    @apply text-xl font-bold mb-2 mt-3 text-foreground;
+  }
+
+  .rich-text-editor h3 {
+    @apply text-lg font-semibold mb-2 mt-3 text-foreground;
+  }
+
+  .rich-text-editor p {
+    @apply mb-3 text-foreground leading-relaxed;
+  }
+
+  .rich-text-editor ul {
+    @apply mb-3 pl-5 space-y-1;
+  }
+
+  .rich-text-editor ol {
+    @apply mb-3 pl-5 space-y-1;
+  }
+
+  .rich-text-editor li {
+    @apply text-foreground leading-relaxed;
+  }
+
+  .rich-text-editor blockquote {
+    @apply border-l-4 border-primary/30 pl-3 py-2 my-3 bg-muted/30 italic text-muted-foreground;
+  }
+
+  .rich-text-editor strong {
+    @apply font-semibold text-foreground;
+  }
+
+  .rich-text-editor em {
+    @apply italic text-foreground;
+  }
+
+  .rich-text-editor u {
+    @apply underline text-foreground;
+  }
+
+  .rich-text-editor ul li {
+    @apply list-disc;
+  }
+
+  .rich-text-editor ol li {
+    @apply list-decimal;
+  }
+
+  /* Advanced Text Editor Styles */
+  .advanced-text-editor {
+    @apply text-foreground;
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: normal;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    outline: none;
+  }
+
+  .advanced-text-editor h1 {
+    @apply text-2xl font-bold mb-3 mt-4 text-foreground;
+  }
+
+  .advanced-text-editor h2 {
+    @apply text-xl font-bold mb-2 mt-3 text-foreground;
+  }
+
+  .advanced-text-editor h3 {
+    @apply text-lg font-semibold mb-2 mt-3 text-foreground;
+  }
+
+  .advanced-text-editor p {
+    @apply mb-3 text-foreground leading-relaxed;
+  }
+
+  .advanced-text-editor ul {
+    @apply mb-3 pl-5 space-y-1;
+  }
+
+  .advanced-text-editor ol {
+    @apply mb-3 pl-5 space-y-1;
+  }
+
+  .advanced-text-editor li {
+    @apply text-foreground leading-relaxed;
+  }
+
+  .advanced-text-editor blockquote {
+    @apply border-l-4 border-primary/30 pl-3 py-2 my-3 bg-muted/30 italic text-muted-foreground;
+  }
+
+  .advanced-text-editor strong {
+    @apply font-semibold text-foreground;
+  }
+
+  .advanced-text-editor em {
+    @apply italic text-foreground;
+  }
+
+  .advanced-text-editor u {
+    @apply underline text-foreground;
+  }
+
+  .advanced-text-editor ul li {
+    @apply list-disc;
+  }
+
+  .advanced-text-editor ol li {
+    @apply list-decimal;
+  }
+
+  /* Text alignment styles */
+  .advanced-text-editor [style*="text-align: center"] {
+    @apply text-center;
+  }
+
+  .advanced-text-editor [style*="text-align: right"] {
+    @apply text-right;
+  }
+
+  .advanced-text-editor [style*="text-align: left"] {
+    @apply text-left;
+  }
+
+  .advanced-text-editor [style*="text-align: justify"] {
+    @apply text-justify;
+  }
+
+  /* Handle mixed content and pasted RTL text */
+  .advanced-text-editor [dir="rtl"],
+  .advanced-text-editor [style*="direction: rtl"] {
+    direction: ltr !important;
+    unicode-bidi: normal !important;
+  }
+
+  /* Ensure proper cursor behavior for mixed content */
+  .advanced-text-editor br {
+    unicode-bidi: normal;
+  }
+
+  /* Advanced Text Content Display Styles */
+  .advanced-text-content {
+    @apply text-foreground;
+    direction: ltr !important;
+    text-align: left;
+    unicode-bidi: normal;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .advanced-text-content h1 {
+    @apply text-3xl font-bold mb-4 mt-6 text-foreground;
+  }
+
+  .advanced-text-content h2 {
+    @apply text-2xl font-bold mb-3 mt-5 text-foreground;
+  }
+
+  .advanced-text-content h3 {
+    @apply text-xl font-semibold mb-2 mt-4 text-foreground;
+  }
+
+  .advanced-text-content p {
+    @apply mb-4 text-foreground leading-relaxed;
+  }
+
+  .advanced-text-content ul {
+    @apply mb-4 pl-6 space-y-2;
+  }
+
+  .advanced-text-content ol {
+    @apply mb-4 pl-6 space-y-2;
+  }
+
+  .advanced-text-content li {
+    @apply text-foreground leading-relaxed;
+  }
+
+  .advanced-text-content blockquote {
+    @apply border-l-4 border-primary/30 pl-4 py-2 my-4 bg-muted/30 italic text-muted-foreground;
+  }
+
+  .advanced-text-content strong {
+    @apply font-semibold text-foreground;
+  }
+
+  .advanced-text-content em {
+    @apply italic text-foreground;
+  }
+
+  .advanced-text-content u {
+    @apply underline text-foreground;
+  }
+
+  .advanced-text-content ul li {
+    @apply list-disc;
+  }
+
+  .advanced-text-content ol li {
+    @apply list-decimal;
+  }
+
+  /* Text alignment styles for display */
+  .advanced-text-content [style*="text-align: center"] {
+    @apply text-center;
+  }
+
+  .advanced-text-content [style*="text-align: right"] {
+    @apply text-right;
+  }
+
+  .advanced-text-content [style*="text-align: left"] {
+    @apply text-left;
+  }
+
+  .advanced-text-content [style*="text-align: justify"] {
+    @apply text-justify;
+  }
+
+  /* TipTap Editor Styles */
+  .ProseMirror {
+    @apply text-foreground;
+    outline: none;
+    min-height: 200px;
+    padding: 0;
+  }
+
+  .ProseMirror p {
+    @apply mb-3 text-foreground leading-relaxed;
+  }
+
+  .ProseMirror h1 {
+    @apply text-3xl font-bold mb-4 mt-6 text-foreground;
+  }
+
+  .ProseMirror h2 {
+    @apply text-2xl font-bold mb-3 mt-5 text-foreground;
+  }
+
+  .ProseMirror h3 {
+    @apply text-xl font-semibold mb-2 mt-4 text-foreground;
+  }
+
+  .ProseMirror ul {
+    @apply mb-4 pl-6 space-y-2;
+  }
+
+  .ProseMirror ol {
+    @apply mb-4 pl-6 space-y-2;
+  }
+
+  .ProseMirror li {
+    @apply text-foreground leading-relaxed;
+  }
+
+  .ProseMirror blockquote {
+    @apply border-l-4 border-primary/30 pl-4 py-2 my-4 bg-muted/30 italic text-muted-foreground;
+  }
+
+  .ProseMirror strong {
+    @apply font-semibold text-foreground;
+  }
+
+  .ProseMirror em {
+    @apply italic text-foreground;
+  }
+
+  .ProseMirror u {
+    @apply underline text-foreground;
+  }
+
+  .ProseMirror ul li {
+    @apply list-disc;
+  }
+
+  .ProseMirror ol li {
+    @apply list-decimal;
+  }
+
+  /* Text alignment styles */
+  .ProseMirror [style*="text-align: center"] {
+    @apply text-center;
+  }
+
+  .ProseMirror [style*="text-align: right"] {
+    @apply text-right;
+  }
+
+  .ProseMirror [style*="text-align: left"] {
+    @apply text-left;
+  }
+
+  .ProseMirror [style*="text-align: justify"] {
+    @apply text-justify;
+  }
+
+  /* Placeholder styling */
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply text-muted-foreground;
+    float: left;
+    pointer-events: none;
+    height: 0;
+  }
+
+  /* Handle mixed content and pasted RTL text in display */
+  .advanced-text-content [dir="rtl"],
+  .advanced-text-content [style*="direction: rtl"] {
+    direction: ltr !important;
+    unicode-bidi: normal !important;
   }
 }

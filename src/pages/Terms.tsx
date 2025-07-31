@@ -36,16 +36,16 @@ export default function Terms() {
               <div className="space-y-8">
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Acceptance of Terms</h2>
-                  <p className="text-muted-foreground mb-4">
-                    By accessing and using MediBilling Pro's website and services, you accept 
+                  <p className="text-lg text-muted-foreground mb-8">
+                    By accessing and using BillFill RCM's website and services, you accept 
                     and agree to be bound by the terms and provision of this agreement.
                   </p>
                 </section>
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Services Description</h2>
-                  <p className="text-muted-foreground mb-4">
-                    MediBilling Pro provides medical billing, coding, and revenue cycle 
+                  <p className="text-lg text-muted-foreground mb-8">
+                    BillFill RCM provides medical billing, coding, and revenue cycle 
                     management services to healthcare providers. Our services include but 
                     are not limited to:
                   </p>
@@ -60,7 +60,7 @@ export default function Terms() {
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Client Responsibilities</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-lg text-muted-foreground mb-8">
                     Clients agree to:
                   </p>
                   <ul className="list-disc list-inside space-y-2 text-muted-foreground">
@@ -74,7 +74,7 @@ export default function Terms() {
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Payment Terms</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-lg text-muted-foreground mb-8">
                     Payment terms are established in individual service agreements. 
                     Standard terms include:
                   </p>
@@ -88,7 +88,7 @@ export default function Terms() {
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Confidentiality and HIPAA</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-lg text-muted-foreground mb-8">
                     We are committed to maintaining the confidentiality of all patient 
                     information and comply with HIPAA regulations. Both parties agree to:
                   </p>
@@ -102,8 +102,8 @@ export default function Terms() {
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Limitation of Liability</h2>
-                  <p className="text-muted-foreground mb-4">
-                    MediBilling Pro's liability is limited to the fees paid for services 
+                  <p className="text-lg text-muted-foreground mb-8">
+                    BillFill RCM's liability is limited to the fees paid for services 
                     in the preceding 12 months. We are not liable for:
                   </p>
                   <ul className="list-disc list-inside space-y-2 text-muted-foreground">
@@ -116,7 +116,7 @@ export default function Terms() {
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Termination</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-lg text-muted-foreground mb-8">
                     Either party may terminate services with 30 days written notice. 
                     Upon termination:
                   </p>
@@ -130,16 +130,16 @@ export default function Terms() {
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Intellectual Property</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-lg text-muted-foreground mb-8">
                     All proprietary systems, processes, and materials remain the property 
-                    of MediBilling Pro. Clients retain ownership of their patient data 
+                    of BillFill RCM. Clients retain ownership of their patient data 
                     and practice information.
                   </p>
                 </section>
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Dispute Resolution</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-lg text-muted-foreground mb-8">
                     Any disputes will be resolved through binding arbitration in accordance 
                     with the rules of the American Arbitration Association.
                   </p>
@@ -147,7 +147,7 @@ export default function Terms() {
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Changes to Terms</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-lg text-muted-foreground mb-8">
                     We may update these terms from time to time. Clients will be notified 
                     of significant changes with 30 days advance notice.
                   </p>
@@ -155,14 +155,14 @@ export default function Terms() {
 
                 <section>
                   <h2 className="text-2xl font-bold mb-4">Contact Information</h2>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-lg text-muted-foreground mb-8">
                     For questions about these terms, please contact us:
                   </p>
                   <div className="bg-muted/30 p-4 rounded-lg">
-                    <p className="font-medium">MediBilling Pro</p>
+                    <p className="font-medium">BillFill RCM</p>
                     <p className="text-sm text-muted-foreground">123 Medical Plaza, Suite 100</p>
                     <p className="text-sm text-muted-foreground">Healthcare City, HC 12345</p>
-                    <p className="text-sm text-muted-foreground">Email: legal@medibillingpro.com</p>
+                    <p className="text-sm text-muted-foreground">Email: legal@billfillrcm.com</p>
                     <p className="text-sm text-muted-foreground">Phone: (555) 123-4567</p>
                   </div>
                 </section>

@@ -37,18 +37,21 @@ import {
 } from '@/lib/localStorage';
 import { getImageSource } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { useServices } from '@/contexts/ServicesContext';
+import { AdvancedTextEditor } from '@/components/AdvancedTextEditor';
+
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [editingTeam, setEditingTeam] = useState<TeamMember | null>(null);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
   const { toast } = useToast();
+  const { services, updateServices } = useServices();
 
   useEffect(() => {
     // Check if already logged in
@@ -61,7 +64,6 @@ export default function Admin() {
 
   const loadData = () => {
     setTeamMembers(getTeamMembers());
-    setServices(getServices());
     setJobs(getJobs());
   };
 
@@ -164,16 +166,16 @@ export default function Admin() {
     const updated = services.find(s => s.id === newService.id)
       ? services.map(s => s.id === newService.id ? newService : s)
       : [...services, newService];
-    setServices(updated);
-    saveServices(updated);
+    
+    // Update both local state and global context
+    updateServices(updated);
     setEditingService(null);
     toast({ title: "Service saved successfully!" });
   };
 
   const handleDeleteService = (id: string) => {
     const updated = services.filter(s => s.id !== id);
-    setServices(updated);
-    saveServices(updated);
+    updateServices(updated);
     toast({ title: "Service deleted successfully!" });
   };
 
@@ -668,13 +670,12 @@ function ServiceForm({ service, onSave }: { service: Service | null, onSave: (se
         />
       </div>
       <div>
-        <Label htmlFor="details">Service Details</Label>
-        <Textarea
-          id="details"
+        <AdvancedTextEditor
           value={formData.details || ''}
-          onChange={(e) => setFormData({...formData, details: e.target.value})}
-          rows={5}
-          placeholder="Enter detailed information about the service here."
+          onChange={(value) => setFormData({...formData, details: value})}
+          label="Service Details"
+          placeholder="Enter detailed information about the service here with advanced formatting options..."
+          rows={8}
         />
       </div>
       
@@ -701,13 +702,12 @@ function ServiceForm({ service, onSave }: { service: Service | null, onSave: (se
         />
       </div>
       <div>
-        <Label htmlFor="detailedContent">Detailed Content</Label>
-        <Textarea
-          id="detailedContent"
+        <AdvancedTextEditor
           value={formData.detailedContent || ''}
-          onChange={(e) => setFormData({...formData, detailedContent: e.target.value})}
-          rows={6}
-          placeholder="Enter comprehensive content about the service (supports line breaks)"
+          onChange={(value) => setFormData({...formData, detailedContent: value})}
+          label="Detailed Content"
+          placeholder="Enter comprehensive content about the service with advanced formatting options..."
+          rows={10}
         />
       </div>
       <Separator />

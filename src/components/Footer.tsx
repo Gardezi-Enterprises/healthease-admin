@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Shield, Phone, Mail, MapPin } from 'lucide-react';
+import { useServices } from '@/contexts/ServicesContext';
 
 export function Footer() {
+  const { services } = useServices();
+
   return (
     <footer className="bg-card border-t">
       <div className="container mx-auto px-4 py-12 lg:px-8">
@@ -9,10 +12,10 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Shield className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                MediBilling Pro
-              </span>
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">BP</span>
+              </div>
+              <span className="font-bold text-xl">BillFill RCM</span>
             </div>
             <p className="text-muted-foreground text-sm">
               Professional medical billing services with integrity, accuracy, and excellence.
@@ -50,10 +53,17 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Services</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>Medical Coding</li>
-              <li>Claims Processing</li>
-              <li>Revenue Cycle Management</li>
-              <li>Compliance Consulting</li>
+              {services.slice(0, 4).map((service) => (
+                <li key={service.id}>{service.title}</li>
+              ))}
+              {services.length === 0 && (
+                <>
+                  <li>Medical Coding</li>
+                  <li>Claims Processing</li>
+                  <li>Revenue Cycle Management</li>
+                  <li>Compliance Consulting</li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -67,7 +77,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>info@medibillingpro.com</span>
+                <span>info@billfillrcm.com</span>
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
@@ -78,7 +88,7 @@ export function Footer() {
         </div>
 
         <div className="border-t mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>&copy; 2024 MediBilling Pro. All rights reserved.</p>
+          <p>&copy; 2025 BillFill RCM. All rights reserved.</p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             <Link to="/privacy" className="hover:text-primary transition-colors">
               Privacy Policy

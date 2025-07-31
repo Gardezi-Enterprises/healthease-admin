@@ -1,17 +1,12 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getServices, type Service } from '@/lib/localStorage';
+import { useServices } from '@/contexts/ServicesContext';
 
 export default function Services() {
-  const [services, setServices] = useState<Service[]>([]);
-
-  useEffect(() => {
-    setServices(getServices());
-  }, []);
+  const { services } = useServices();
 
   return (
     <div className="min-h-screen">

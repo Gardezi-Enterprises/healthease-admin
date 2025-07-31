@@ -38,7 +38,7 @@ export interface AdminData {
   jobs: Job[];
 }
 
-const STORAGE_KEY = 'medibilling-admin-data';
+const STORAGE_KEY = 'billfillrcm-admin-data';
 
 // Default data
 const defaultData: AdminData = {

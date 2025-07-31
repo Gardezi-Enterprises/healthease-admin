@@ -140,10 +140,10 @@ export default function Privacy() {
                     practices, please contact us:
                   </p>
                   <div className="bg-muted/30 p-4 rounded-lg">
-                    <p className="font-medium">MediBilling Pro</p>
+                    <p className="font-medium">BillFill RCM</p>
                     <p className="text-sm text-muted-foreground">123 Medical Plaza, Suite 100</p>
                     <p className="text-sm text-muted-foreground">Healthcare City, HC 12345</p>
-                    <p className="text-sm text-muted-foreground">Email: privacy@medibillingpro.com</p>
+                    <p className="text-sm text-muted-foreground">Email: privacy@billfillrcm.com</p>
                     <p className="text-sm text-muted-foreground">Phone: (555) 123-4567</p>
                   </div>
                 </section>
