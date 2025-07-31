@@ -1,6 +1,58 @@
 import { supabase } from '@/integrations/supabase/client';
 import { type TeamMember, type Job } from './localStorage';
 
+// Image upload function
+export async function uploadImage(file: File, bucket: string = 'team-images'): Promise<string | null> {
+  try {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file);
+
+    if (uploadError) {
+      console.error('Error uploading image:', uploadError);
+      return null;
+    }
+
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
+  } catch (error) {
+    console.error('Error in uploadImage:', error);
+    return null;
+  }
+}
+
+// Delete image function
+export async function deleteImage(imageUrl: string, bucket: string = 'team-images'): Promise<boolean> {
+  try {
+    // Extract the file path from the URL
+    const urlParts = imageUrl.split('/');
+    const fileName = urlParts[urlParts.length - 1];
+    
+    if (!fileName) return false;
+
+    const { error } = await supabase.storage
+      .from(bucket)
+      .remove([fileName]);
+
+    if (error) {
+      console.error('Error deleting image:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error in deleteImage:', error);
+    return false;
+  }
+}
+
 // Team management functions
 export async function getTeamMembers(): Promise<TeamMember[]> {
   try {
