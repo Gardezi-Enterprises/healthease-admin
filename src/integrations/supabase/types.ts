@@ -38,6 +38,51 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          id: string
+          title: string
+          description: string
+          details: string | null
+          detailed_title: string | null
+          detailed_description: string | null
+          detailed_content: string | null
+          process_steps: string[] | null
+          features: string[] | null
+          benefits: string[] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description: string
+          details?: string | null
+          detailed_title?: string | null
+          detailed_description?: string | null
+          detailed_content?: string | null
+          process_steps?: string[] | null
+          features?: string[] | null
+          benefits?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string
+          details?: string | null
+          detailed_title?: string | null
+          detailed_description?: string | null
+          detailed_content?: string | null
+          process_steps?: string[] | null
+          features?: string[] | null
+          benefits?: string[] | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

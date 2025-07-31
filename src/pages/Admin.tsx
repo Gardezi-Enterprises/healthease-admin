@@ -157,26 +157,46 @@ export default function Admin() {
     toast({ title: "Team member deleted successfully!" });
   };
 
-  const handleSaveService = (service: Service) => {
-    // Generate a unique id if this is a new service
-    const newService = {
-      ...service,
-      id: service.id || Date.now().toString(),
-    };
-    const updated = services.find(s => s.id === newService.id)
-      ? services.map(s => s.id === newService.id ? newService : s)
-      : [...services, newService];
-    
-    // Update both local state and global context
-    updateServices(updated);
-    setEditingService(null);
-    toast({ title: "Service saved successfully!" });
+  const handleSaveService = async (service: Service) => {
+    try {
+      const { error } = await supabase
+        .from('services')
+        .upsert(service);
+
+      if (error) {
+        toast({ title: "Failed to save service", description: error.message, variant: "destructive" });
+      } else {
+        const { data } = await supabase.from('services').select('*');
+        if (data) {
+          updateServices(data);
+          setEditingService(null);
+          toast({ title: "Service saved successfully!" });
+        }
+      }
+    } catch (error) {
+      toast({ title: "Error", description: "An error occurred while saving the service.", variant: "destructive" });
+    }
   };
 
-  const handleDeleteService = (id: string) => {
-    const updated = services.filter(s => s.id !== id);
-    updateServices(updated);
-    toast({ title: "Service deleted successfully!" });
+  const handleDeleteService = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('services')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        toast({ title: "Failed to delete service", description: error.message, variant: "destructive" });
+      } else {
+        const { data } = await supabase.from('services').select('*');
+        if (data) {
+          updateServices(data);
+          toast({ title: "Service deleted successfully!" });
+        }
+      }
+    } catch (error) {
+      toast({ title: "Error", description: "An error occurred while deleting the service.", variant: "destructive" });
+    }
   };
 
   const handleSaveJob = (job: Job) => {
