@@ -150,21 +150,38 @@ export default function Admin() {
   };
 
   const handleSaveTeam = async (member: TeamMember) => {
-    const updated = teamMembers.find(t => t.id === member.id)
-      ? teamMembers.map(t => t.id === member.id ? member : t)
-      : [...teamMembers, { ...member, id: Date.now().toString() }];
-    
-    setTeamMembers(updated);
-    await saveTeamMembers(updated);
-    setEditingTeam(null);
-    toast({ title: "Team member saved successfully!" });
+    try {
+      const success = await saveTeamMember(member);
+      if (success) {
+        // Reload team members from database
+        const updatedTeamMembers = await getTeamMembers();
+        setTeamMembers(updatedTeamMembers);
+        setEditingTeam(null);
+        toast({ title: "Team member saved successfully!" });
+      } else {
+        toast({ title: "Failed to save team member", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error('Error saving team member:', error);
+      toast({ title: "Error saving team member", variant: "destructive" });
+    }
   };
 
   const handleDeleteTeam = async (id: string) => {
-    const updated = teamMembers.filter(t => t.id !== id);
-    setTeamMembers(updated);
-    await saveTeamMembers(updated);
-    toast({ title: "Team member deleted successfully!" });
+    try {
+      const success = await deleteTeamMember(id);
+      if (success) {
+        // Reload team members from database
+        const updatedTeamMembers = await getTeamMembers();
+        setTeamMembers(updatedTeamMembers);
+        toast({ title: "Team member deleted successfully!" });
+      } else {
+        toast({ title: "Failed to delete team member", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error('Error deleting team member:', error);
+      toast({ title: "Error deleting team member", variant: "destructive" });
+    }
   };
 
   const handleSaveService = async (service: Service) => {
@@ -249,22 +266,39 @@ export default function Admin() {
     }
   };
 
-  const handleSaveJob = (job: Job) => {
-    const updated = jobs.find(j => j.id === job.id)
-      ? jobs.map(j => j.id === job.id ? job : j)
-      : [...jobs, { ...job, id: Date.now().toString(), postedDate: new Date().toISOString().split('T')[0] }];
-    
-    setJobs(updated);
-    saveJobs(updated);
-    setEditingJob(null);
-    toast({ title: "Job saved successfully!" });
+  const handleSaveJob = async (job: Job) => {
+    try {
+      const success = await saveJob(job);
+      if (success) {
+        // Reload jobs from database
+        const updatedJobs = await getJobs();
+        setJobs(updatedJobs);
+        setEditingJob(null);
+        toast({ title: "Job saved successfully!" });
+      } else {
+        toast({ title: "Failed to save job", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error('Error saving job:', error);
+      toast({ title: "Error saving job", variant: "destructive" });
+    }
   };
 
-  const handleDeleteJob = (id: string) => {
-    const updated = jobs.filter(j => j.id !== id);
-    setJobs(updated);
-    saveJobs(updated);
-    toast({ title: "Job deleted successfully!" });
+  const handleDeleteJob = async (id: string) => {
+    try {
+      const success = await deleteJob(id);
+      if (success) {
+        // Reload jobs from database
+        const updatedJobs = await getJobs();
+        setJobs(updatedJobs);
+        toast({ title: "Job deleted successfully!" });
+      } else {
+        toast({ title: "Failed to delete job", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      toast({ title: "Error deleting job", variant: "destructive" });
+    }
   };
 
   if (!isAuthenticated) {

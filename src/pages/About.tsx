@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Award, Users, Target, Heart } from 'lucide-react';
-import { getTeamMembers, type TeamMember } from '@/lib/localStorage';
+import { getTeamMembers } from '@/lib/supabaseServices';
+import { type TeamMember } from '@/lib/localStorage';
 import { getImageSource } from '@/lib/utils';
 import teamMember1 from '@/assets/team-member-1.jpg';
 import teamMember2 from '@/assets/team-member-2.jpg';
@@ -11,7 +12,11 @@ export default function About() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
 
   useEffect(() => {
-    setTeamMembers(getTeamMembers());
+    const loadTeamMembers = async () => {
+      const members = await getTeamMembers();
+      setTeamMembers(members);
+    };
+    loadTeamMembers();
   }, []);
 
   const values = [
