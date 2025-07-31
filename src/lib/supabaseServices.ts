@@ -1,16 +1,83 @@
 import { supabase } from '@/integrations/supabase/client';
 import { type TeamMember, type Job } from './localStorage';
 
+// Check if storage bucket exists, create if not
+export async function ensureStorageBucket(bucketName: string = 'team-images'): Promise<boolean> {
+  try {
+    // Check if bucket exists
+    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+    
+    if (listError) {
+      console.error('Error listing buckets:', listError);
+      return false;
+    }
+
+    const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
+    
+    if (!bucketExists) {
+      // Create bucket if it doesn't exist
+      const { error: createError } = await supabase.storage.createBucket(bucketName, {
+        public: true,
+        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+        fileSizeLimit: 5242880 // 5MB
+      });
+
+      if (createError) {
+        console.error('Error creating bucket:', createError);
+        return false;
+      }
+      
+      console.log(`Storage bucket '${bucketName}' created successfully`);
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error ensuring storage bucket:', error);
+    return false;
+  }
+}
+
 // Image upload function
 export async function uploadImage(file: File, bucket: string = 'team-images'): Promise<string | null> {
   try {
+    // Validate file
+    if (!file || file.size === 0) {
+      console.error('Invalid file provided');
+      return null;
+    }
+
+    // Check file size (5MB limit)
+    if (file.size > 5242880) {
+      console.error('File size exceeds 5MB limit');
+      return null;
+    }
+
+    // Check file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      console.error('Invalid file type. Only images are allowed.');
+      return null;
+    }
+
+    // Ensure bucket exists
+    const bucketReady = await ensureStorageBucket(bucket);
+    if (!bucketReady) {
+      console.error('Failed to ensure storage bucket exists');
+      return null;
+    }
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
     const filePath = `${fileName}`;
 
+    console.log('Uploading file:', { fileName, fileSize: file.size, fileType: file.type });
+
     const { error: uploadError } = await supabase.storage
       .from(bucket)
-      .upload(filePath, file);
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
     if (uploadError) {
       console.error('Error uploading image:', uploadError);
@@ -21,6 +88,7 @@ export async function uploadImage(file: File, bucket: string = 'team-images'): P
       .from(bucket)
       .getPublicUrl(filePath);
 
+    console.log('Image uploaded successfully:', data.publicUrl);
     return data.publicUrl;
   } catch (error) {
     console.error('Error in uploadImage:', error);

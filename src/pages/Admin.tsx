@@ -155,9 +155,36 @@ export default function Admin() {
 
       // Upload image if it's a File
       if (member.image instanceof File) {
+        // Show uploading toast
+        toast({ title: "Uploading image...", description: "Please wait while we upload your image." });
+        
+        // Validate file before upload
+        if (member.image.size > 5242880) { // 5MB
+          toast({ 
+            title: "Image too large", 
+            description: "Please choose an image smaller than 5MB.", 
+            variant: "destructive" 
+          });
+          return;
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(member.image.type)) {
+          toast({ 
+            title: "Invalid file type", 
+            description: "Please choose a valid image file (JPEG, PNG, GIF, or WebP).", 
+            variant: "destructive" 
+          });
+          return;
+        }
+
         imageUrl = await uploadImage(member.image);
         if (!imageUrl) {
-          toast({ title: "Failed to upload image", variant: "destructive" });
+          toast({ 
+            title: "Failed to upload image", 
+            description: "Please check your internet connection and try again. Make sure the storage bucket is properly configured in Supabase.", 
+            variant: "destructive" 
+          });
           return;
         }
         member.image = imageUrl;
