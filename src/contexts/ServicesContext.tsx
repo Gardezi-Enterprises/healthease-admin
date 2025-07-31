@@ -26,7 +26,20 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         const localServices = getServices();
         setServices(localServices);
       } else {
-        setServices(data || []);
+        // Transform snake_case to camelCase
+        const transformedServices = (data || []).map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          details: item.details,
+          detailedTitle: item.detailed_title,
+          detailedDescription: item.detailed_description,
+          detailedContent: item.detailed_content,
+          processSteps: item.process_steps,
+          features: item.features,
+          benefits: item.benefits
+        }));
+        setServices(transformedServices);
       }
     } catch (error) {
       console.error('Failed to load services:', error);

@@ -159,16 +159,43 @@ export default function Admin() {
 
   const handleSaveService = async (service: Service) => {
     try {
+      // Transform camelCase to snake_case for database
+      const dbService = {
+        id: service.id || undefined,
+        title: service.title,
+        description: service.description,
+        details: service.details || '',
+        detailed_title: service.detailedTitle || '',
+        detailed_description: service.detailedDescription || '',
+        detailed_content: service.detailedContent || '',
+        process_steps: service.processSteps || [],
+        features: service.features || [],
+        benefits: service.benefits || []
+      };
+
       const { error } = await supabase
         .from('services')
-        .upsert(service);
+        .upsert(dbService);
 
       if (error) {
         toast({ title: "Failed to save service", description: error.message, variant: "destructive" });
       } else {
+        // Fetch updated services and transform them back to camelCase
         const { data } = await supabase.from('services').select('*');
         if (data) {
-          updateServices(data);
+          const transformedServices = data.map(item => ({
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            details: item.details,
+            detailedTitle: item.detailed_title,
+            detailedDescription: item.detailed_description,
+            detailedContent: item.detailed_content,
+            processSteps: item.process_steps,
+            features: item.features,
+            benefits: item.benefits
+          }));
+          updateServices(transformedServices);
           setEditingService(null);
           toast({ title: "Service saved successfully!" });
         }
@@ -188,9 +215,22 @@ export default function Admin() {
       if (error) {
         toast({ title: "Failed to delete service", description: error.message, variant: "destructive" });
       } else {
+        // Fetch updated services and transform them back to camelCase
         const { data } = await supabase.from('services').select('*');
         if (data) {
-          updateServices(data);
+          const transformedServices = data.map(item => ({
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            details: item.details,
+            detailedTitle: item.detailed_title,
+            detailedDescription: item.detailed_description,
+            detailedContent: item.detailed_content,
+            processSteps: item.process_steps,
+            features: item.features,
+            benefits: item.benefits
+          }));
+          updateServices(transformedServices);
           toast({ title: "Service deleted successfully!" });
         }
       }
