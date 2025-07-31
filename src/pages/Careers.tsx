@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { MapPin, Clock, Briefcase, Calendar } from 'lucide-react';
-import { getJobs, type Job } from '@/lib/localStorage';
+import { getJobs } from '@/lib/supabaseServices';
+import { type Job } from '@/lib/localStorage';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Careers() {
@@ -32,7 +33,21 @@ export default function Careers() {
   });
 
   useEffect(() => {
-    setJobs(getJobs());
+    const fetchJobs = async () => {
+      try {
+        const jobsData = await getJobs();
+        setJobs(jobsData);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load jobs. Please refresh the page.",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    fetchJobs();
   }, []);
 
   const handleApply = (job: Job) => {
