@@ -43,13 +43,13 @@ export type Database = {
           id: string
           title: string
           description: string
-          details: string | null
-          detailed_title: string | null
-          detailed_description: string | null
-          detailed_content: string | null
-          process_steps: string[] | null
-          features: string[] | null
-          benefits: string[] | null
+          details: string
+          detailed_title: string
+          detailed_description: string
+          detailed_content: string
+          process_steps: string[]
+          features: string[]
+          benefits: string[]
           created_at: string
           updated_at: string
         }
@@ -57,13 +57,13 @@ export type Database = {
           id?: string
           title: string
           description: string
-          details?: string | null
-          detailed_title?: string | null
-          detailed_description?: string | null
-          detailed_content?: string | null
-          process_steps?: string[] | null
-          features?: string[] | null
-          benefits?: string[] | null
+          details?: string
+          detailed_title?: string
+          detailed_description?: string
+          detailed_content?: string
+          process_steps?: string[]
+          features?: string[]
+          benefits?: string[]
           created_at?: string
           updated_at?: string
         }
@@ -71,13 +71,13 @@ export type Database = {
           id?: string
           title?: string
           description?: string
-          details?: string | null
-          detailed_title?: string | null
-          detailed_description?: string | null
-          detailed_content?: string | null
-          process_steps?: string[] | null
-          features?: string[] | null
-          benefits?: string[] | null
+          details?: string
+          detailed_title?: string
+          detailed_description?: string
+          detailed_content?: string
+          process_steps?: string[]
+          features?: string[]
+          benefits?: string[]
           created_at?: string
           updated_at?: string
         }
