@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      jobs: {
+        Row: {
+          created_at: string
+          department: string
+          description: string
+          id: string
+          location: string
+          posted_date: string
+          requirements: string[]
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department: string
+          description: string
+          id?: string
+          location: string
+          posted_date?: string
+          requirements?: string[]
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department?: string
+          description?: string
+          id?: string
+          location?: string
+          posted_date?: string
+          requirements?: string[]
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -35,6 +74,36 @@ export type Database = {
           id?: string
           password_hash?: string
           role?: string
+        }
+        Relationships: []
+      }
+      teams: {
+        Row: {
+          bio: string
+          created_at: string
+          id: string
+          image: string
+          name: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string
+          created_at?: string
+          id?: string
+          image?: string
+          name: string
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string
+          created_at?: string
+          id?: string
+          image?: string
+          name?: string
+          role?: string
+          updated_at?: string
         }
         Relationships: []
       }

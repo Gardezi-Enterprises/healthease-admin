@@ -25,16 +25,24 @@ import bcrypt from 'bcryptjs';
 import {
   loadAdminData,
   saveAdminData,
-  getTeamMembers,
-  saveTeamMembers,
+  getTeamMembers as getLocalTeamMembers,
+  saveTeamMembers as saveLocalTeamMembers,
   getServices,
   saveServices,
-  getJobs,
-  saveJobs,
+  getJobs as getLocalJobs,
+  saveJobs as saveLocalJobs,
   type TeamMember,
   type Service,
   type Job
 } from '@/lib/localStorage';
+import {
+  getTeamMembers,
+  saveTeamMember,
+  deleteTeamMember,
+  getJobs,
+  saveJob,
+  deleteJob
+} from '@/lib/supabaseServices';
 import { getImageSource } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { useServices } from '@/contexts/ServicesContext';
@@ -62,9 +70,11 @@ export default function Admin() {
     }
   }, []);
 
-  const loadData = () => {
-    setTeamMembers(getTeamMembers());
-    setJobs(getJobs());
+  const loadData = async () => {
+    const teamData = await getTeamMembers();
+    const jobsData = await getJobs();
+    setTeamMembers(teamData);
+    setJobs(jobsData);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
