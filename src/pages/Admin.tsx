@@ -362,7 +362,7 @@ export default function Admin() {
                   type="email"
                   value={loginForm.email}
                   onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
-                  placeholder="admin@medicalbilling.com"
+                  placeholder="Enter your email"
                   required
                 />
               </div>
@@ -373,17 +373,17 @@ export default function Admin() {
                   type="password"
                   value={loginForm.password}
                   onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-                  placeholder="admin123"
+                  placeholder="Enter your password"
                   required
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" variant="default" className="w-full" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
-            <div className="mt-4 text-xs text-muted-foreground text-center">
+            {/* <div className="mt-4 text-xs text-muted-foreground text-center">
               Demo credentials: admin@medicalbilling.com / adminpass@123
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>
@@ -756,7 +756,7 @@ function TeamMemberForm({ member, onSave }: { member: TeamMember | null, onSave:
           </div>
         )}
       </div>
-      <Button type="submit" className="w-full">Save</Button>
+      <Button type="submit" variant="default" className="w-full">Save</Button>
     </form>
   );
 }
@@ -922,7 +922,7 @@ function ServiceForm({ service, onSave }: { service: Service | null, onSave: (se
         </div>
       </div>
       <div className="pt-4">
-        <Button type="submit" className="w-full">Save Service</Button>
+        <Button type="submit" variant="default" className="w-full">Save Service</Button>
       </div>
     </form>
   );
@@ -1002,7 +1002,7 @@ function JobForm({ job, onSave }: { job: Job | null, onSave: (job: Job) => void 
           placeholder="Requirement 1&#10;Requirement 2&#10;Requirement 3"
         />
       </div>
-      <Button type="submit" className="w-full">Save</Button>
+      <Button type="submit" variant="default" className="w-full">Save</Button>
     </form>
   );
 }

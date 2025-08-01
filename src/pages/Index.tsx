@@ -61,12 +61,12 @@ const Index = () => {
                 Let us handle the complexity while you focus on patient care.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" variant="secondary" asChild>
+                <Button size="lg" variant="secondary" asChild className="text-white border-white hover:bg-white hover:text-secondary dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-primary">
                   <Link to="/services">
                     Book Consultation <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-primary">
+                <Button size="lg" variant="outline" asChild className="text-black border-white hover:bg-white hover:text-secondary dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-primary">
                   <Link to="/about">Learn More</Link>
                 </Button>
               </div>

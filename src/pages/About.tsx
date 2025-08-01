@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Award, Users, Target, Heart } from 'lucide-react';
 import { getTeamMembers } from '@/lib/supabaseServices';
 import { type TeamMember } from '@/lib/localStorage';
@@ -184,12 +186,16 @@ export default function About() {
             Let's discuss how we can help optimize your revenue cycle and improve your practice's financial performance.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-white/90 transition-colors">
-              Schedule Consultation
-            </button>
-            <button className="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
-              View Services
-            </button>
+          <Button size="lg" variant="secondary" asChild>
+              <Link to="/contact">
+                Schedule Consultation
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="text-black border-white hover:bg-white hover:text-primary dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-primary">
+              <Link to="/services">
+                View Services
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

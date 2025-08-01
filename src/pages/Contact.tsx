@@ -93,7 +93,7 @@ export default function Contact() {
                           required
                           value={formData.name}
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
-                          className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                          className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring text-foreground bg-background"
                           placeholder="Your full name"
                         />
                       </div>
@@ -105,7 +105,7 @@ export default function Contact() {
                           required
                           value={formData.email}
                           onChange={(e) => setFormData({...formData, email: e.target.value})}
-                          className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                          className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring text-foreground bg-background"
                           placeholder="your@email.com"
                         />
                       </div>
@@ -118,7 +118,7 @@ export default function Contact() {
                           type="tel"
                           value={formData.phone}
                           onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                          className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                          className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring text-foreground bg-background"
                           placeholder="(555) 123-4567"
                         />
                       </div>
@@ -129,7 +129,7 @@ export default function Contact() {
                           type="text"
                           value={formData.company}
                           onChange={(e) => setFormData({...formData, company: e.target.value})}
-                          className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                          className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring text-foreground bg-background"
                           placeholder="Your practice name"
                         />
                       </div>
@@ -141,7 +141,7 @@ export default function Contact() {
                         required
                         value={formData.subject}
                         onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                        className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring text-foreground bg-background"
                       >
                         <option value="">Select a subject</option>
                         <option value="general">General Inquiry</option>
@@ -159,12 +159,12 @@ export default function Contact() {
                         value={formData.message}
                         onChange={(e) => setFormData({...formData, message: e.target.value})}
                         rows={6}
-                        className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                        className="w-full px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none text-foreground bg-background"
                         placeholder="Tell us about your needs, current challenges, or any questions you have..."
                       />
                     </div>
                     
-                    <Button type="submit" className="w-full" disabled={loading}>
+                    <Button type="submit" variant="default" className="w-full" disabled={loading}>
                       {loading ? 'Sending...' : 'Send Message'}
                     </Button>
                   </form>

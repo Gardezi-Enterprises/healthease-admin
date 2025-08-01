@@ -63,7 +63,7 @@ export default function Services() {
                         </ul>
                       </div>
                       
-                      <Button asChild className="mt-6">
+                      <Button asChild variant="secondary" className="mt-6">
                         <Link to={`/services/${service.id}`}>
                           Learn More <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
